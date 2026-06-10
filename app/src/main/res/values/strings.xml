@@ -1058,6 +1058,7 @@
     <string name="check_source_show_debug_message_summary">Show network status and timestamp during source checking</string>
     <string name="need_login">need login</string>
     <string name="pref_cronet_summary">use Cronet access network</string>
+    <string name="cronet">Cronet</string>
     <string name="anti_alias">Anti-Aliasing</string>
     <string name="pref_anti_alias_summary">Anti-Aliasing when draw picture</string>
     <string name="upload_url">upload url</string>
@@ -1733,7 +1734,7 @@
     <string name="detected_as">Detected as: %1$s (%2$d items)</string>
     <string name="detecting">Detecting...</string>
     <string name="unknown_type">Unknown type</string>
-    
+
     <!-- URL Record -->
     <string name="url_record">URL access record</string>
     <string name="record_url_switch">Enable URL recording</string>
@@ -1888,12 +1889,16 @@
     <string name="switch_layout_grid">Grid</string>
     <string name="switch_layout_waterfall">Waterfall</string>
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 47b3bf0c (feat(发现页): 新增瀑布流布局，删除适配宽图功能)
 =======
+=======
+>>>>>>> 9c42adc8 (优化中英文资源文件)
     <!-- Custom Help Documents -->
     <string name="add_custom_group">添加自定义分组</string>
     <string name="add_custom_doc">添加自定义文档</string>
     <string name="group_name">分组名称</string>
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     <string name="doc_name">文档名称</string>
@@ -1918,6 +1923,13 @@
 =======
 >>>>>>> 87ecbb98 (cleanup：删除废弃的自定义帮助文档弹窗)
 =======
+=======
+=======
+
+    <!-- Group Management -->
+    <string name="group_name">Group Name</string>
+>>>>>>> c6f00a4b (优化中英文资源文件)
+>>>>>>> 9c42adc8 (优化中英文资源文件)
 
     <string name="group_name">Group name</string>
 
