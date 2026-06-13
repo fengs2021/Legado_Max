@@ -64,6 +64,7 @@ import kotlinx.coroutines.withContext
 import splitties.views.bottomPadding
 import kotlin.coroutines.resume
 import androidx.core.view.get
+import io.legado.app.data.entities.LayoutMode
 import io.legado.app.help.update.AppUpdate
 import io.legado.app.model.NavigationBarEffectApplier
 import io.legado.app.model.NavigationBarManager
@@ -214,6 +215,8 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
         if (AppConfig.isEInkMode) {
             bottomNavigationView.setBackgroundResource(R.drawable.bg_eink_border_top)
         }
+        // ThemeBottomNavigationVIew 在 init 中清除了 WindowInsetsListener，
+        // 重新设置使其为底栏添加导航栏高度的 bottomPadding，避免被系统手势条遮挡
         bottomNavigationView.setOnApplyWindowInsetsListenerCompat { view, windowInsets ->
             val height = windowInsets.navigationBarHeight
             view.bottomPadding = height
@@ -414,6 +417,39 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
         val entry = NavigationBarManager.loadEntry(dirName)
         if (entry != null) {
             NavigationBarEffectApplier.applyEffect(entry.config, binding)
+        }
+    }
+
+    /**
+     * 覆写系统导航栏颜色设置
+     *
+     * BaseActivity.setupSystemBar() 会在 onCreate/onConfigurationChanged 中调用此方法，
+     * 将 window.navigationBarColor 设为不透明颜色。
+     * 但在 FLOATING 模式下，系统导航栏必须透明才能让底栏内容延伸到系统导航栏区域，
+     * 否则底栏下方会出现一块不透明的系统导航栏。
+     */
+    override fun upNavigationBarColor() {
+        val isNight = AppConfig.isNightTheme
+        val dirName = AppConfig.activeDirName(isNight)
+        val entry = NavigationBarManager.loadEntry(dirName)
+        // 只要布局是 FLOATING，就让系统导航栏透明
+        // （无论 materialMode 是 SOLID/GLASS/FROSTED，悬浮底栏都需要系统导航栏透明）
+        val isFloating = entry != null && entry.config.layoutMode == LayoutMode.FLOATING
+
+        if (isFloating) {
+            // FLOATING 模式：保持透明，让底栏内容延伸到系统导航栏区域
+            window.navigationBarColor = android.graphics.Color.TRANSPARENT
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                // 禁止系统为透明导航栏自动添加半透明 scrim
+                window.isNavigationBarContrastEnforced = false
+            }
+        } else {
+            // 其他模式：走默认逻辑
+            super.upNavigationBarColor()
+            // FIXED 模式：恢复系统自动添加 scrim
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                window.isNavigationBarContrastEnforced = true
+            }
         }
     }
 
