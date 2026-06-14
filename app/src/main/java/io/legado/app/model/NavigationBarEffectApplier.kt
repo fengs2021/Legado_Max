@@ -87,9 +87,11 @@ object NavigationBarEffectApplier {
         val navView = binding.bottomNavigationView
         val viewPager = binding.viewPagerMain
 
-        // 移除 glass/overlay
-        rootView.findViewWithTag<LiquidGlassView>(TAG_GLASS_VIEW)?.let { rootView.removeView(it) }
-        rootView.findViewWithTag<View>(TAG_OVERLAY)?.let { rootView.removeView(it) }
+        // 移除全部 glass/overlay（含帧同步替换中尚未移除的旧 view）
+        // findViewWithTag 仅返回首个匹配，FLOATING→FIXED 切换时帧同步策略
+        // 可能在视图树中同时存在新旧两个同 tag view，必须全部清除。
+        removeAllByTag(rootView, TAG_GLASS_VIEW)
+        removeAllByTag(rootView, TAG_OVERLAY)
 
         // 恢复 ThemeBottomNavigationVIew 默认样式
         if (navView is ThemeBottomNavigationVIew) {
@@ -289,6 +291,22 @@ object NavigationBarEffectApplier {
                 viewPager.paddingBottom
             )
             originalViewPagerClipToPadding = viewPager.clipToPadding
+        }
+    }
+
+    // ---- 辅助方法 ----
+
+    /**
+     * 移除 ViewGroup 中所有 tag 匹配的子 View。
+     * findViewWithTag 仅返回首个匹配，FLOATING→FIXED 切换时可能残留同 tag 的旧 view。
+     */
+    private fun removeAllByTag(parent: ViewGroup, tag: String) {
+        var i = parent.childCount - 1
+        while (i >= 0) {
+            if (parent.getChildAt(i).tag == tag) {
+                parent.removeViewAt(i)
+            }
+            i--
         }
     }
 
