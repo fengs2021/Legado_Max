@@ -211,14 +211,24 @@ object NavigationBarEffectApplier {
                     rootView.addView(glassView, rootView.indexOfChild(navView))
                 }
             } else {
-                // 已有 glassView：仅更新视觉参数（不重建），避免主题切换时移除-重建导致的闪烁
-                if (!updateGlassView(glassView, binding, config)) {
-                    // 更新失败（源 View 已 detach 或库状态异常），回退到重建策略
-                    rootView.removeView(glassView)
-                    glassView = createGlassView(binding, config)
-                    if (glassView != null) {
-                        rootView.addView(glassView, rootView.indexOfChild(navView))
+                // 已有 glassView：先创建新 view（设为 INVISIBLE），加入视图树后再移除旧的，
+                // 最后显示新的。帧同步策略确保无空帧闪烁，同时新 view 通过 setupGlassView
+                // 完成 bind + visual params 全链路初始化，消除 library 引擎空引用 NPE。
+                val newGlassView = createGlassView(binding, config)
+                if (newGlassView != null) {
+                    val oldGlassView = glassView  // 捕获旧引用，避免 post 内 var 被后续赋值覆盖
+                    newGlassView.visibility = View.INVISIBLE
+                    rootView.addView(newGlassView, rootView.indexOfChild(oldGlassView))
+                    // 延迟到下一帧执行替换，此时新 view 已完成 layout，切换对用户无感知
+                    rootView.post {
+                        rootView.removeView(oldGlassView)
+                        newGlassView.visibility = View.VISIBLE
                     }
+                    glassView = newGlassView
+                } else {
+                    // 创建失败，移除旧的但不补充新 view
+                    rootView.removeView(glassView)
+                    glassView = null
                 }
             }
             glassView?.let { gv ->
@@ -354,39 +364,11 @@ object NavigationBarEffectApplier {
     // ---- LiquidGlassView 配置 ----
 
     /**
-     * 更新已绑定的 LiquidGlassView 视觉参数（日夜间主题切换时调用）。
-     *
-     * 不调用 bind()，避免 liquidglass 库内部 Handler 回调访问已释放引擎导致 NPE。
-     * 仅在源 View 未变更的场景下安全使用（theme、materialMode、opacity 等变更）。
-     * 如果源 View 已 detach，返回 false，由调用方回退到重建策略。
-     */
-    private fun updateGlassView(
-        glassView: LiquidGlassView,
-        binding: ActivityMainBinding,
-        config: NavigationBarConfig
-    ): Boolean {
-        try {
-            // 校验源 View 仍然可用
-            val linearLayout = binding.viewPagerMain.parent as? ViewGroup
-            if (linearLayout == null) {
-                (glassView.parent as? ViewGroup)?.removeView(glassView)
-                return false
-            }
-            applyVisualParams(glassView, config)
-            return true
-        } catch (_: Exception) {
-            (glassView.parent as? ViewGroup)?.removeView(glassView)
-            return false
-        }
-    }
-
-    /**
-     * 配置 LiquidGlassView（新 view 创建时调用）
+     * 配置 LiquidGlassView（新 view 创建时调用）。
      *
      * 绑定 LinearLayout（ViewPager 的父容器）作为采样源，
-     * 因为 LiquidGlassView.bind() 要求 source 是同一父容器的兄弟 View。
-     * ViewPager 在 LinearLayout 内，不是 LiquidGlassView 的兄弟，
-     * 而 LinearLayout 是 LiquidGlassView 的兄弟（都是 FrameLayout 的子元素）。
+     * 然后应用全部视觉参数。bind() 是必须的前置步骤，
+     * 初始化库内部渲染状态，失败时从视图树移除并返回 false。
      */
     private fun setupGlassView(
         glassView: LiquidGlassView,
@@ -413,7 +395,6 @@ object NavigationBarEffectApplier {
 
     /**
      * 应用 LiquidGlassView 的视觉参数（bind 之后调用）。
-     * 日夜间主题切换时通过 [updateGlassView] 复用此方法，避免移除-重建导致的闪烁。
      */
     private fun applyVisualParams(glassView: LiquidGlassView, config: NavigationBarConfig) {
         glassView.visibility = View.VISIBLE
