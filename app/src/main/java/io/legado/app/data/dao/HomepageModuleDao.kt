@@ -7,9 +7,6 @@ import androidx.room.Query
 import io.legado.app.data.entities.HomepageModule
 import kotlinx.coroutines.flow.Flow
 
-/**
- * 首页模块数据访问接口
- */
 @Dao
 interface HomepageModuleDao {
 

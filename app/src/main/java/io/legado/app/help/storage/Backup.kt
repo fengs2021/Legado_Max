@@ -53,7 +53,6 @@ import io.legado.app.data.entities.BookChapter
 import io.legado.app.help.book.BookHelp
 import io.legado.app.model.VideoPlay.VIDEO_PREF_NAME
 import io.legado.app.ui.book.read.config.HighlightRuleStore
-import io.legado.app.ui.book.read.websearch.SearchEngineHelper
 import io.legado.app.data.repository.CoverGalleryRepository
 
 /**
@@ -142,8 +141,6 @@ object Backup {
             "bookSource.json",
             "rssSources.json",
             "rssStar.json",
-            "sourceSub.json",
-            "webSearchEngines.json",
             "replaceRule.json",
             HighlightRuleStore.backupFileName,
             "readRecord.json",
@@ -472,15 +469,6 @@ object Backup {
         }
         if (selectedFiles.contains("rssStar.json")) {
             writeListToJson(appDb.rssStarDao.all, "rssStar.json", backupPath, onProgress)
-        }
-        if (selectedFiles.contains("sourceSub.json")) {
-            writeListToJson(appDb.ruleSubDao.all, "sourceSub.json", backupPath, onProgress)
-        }
-        if (selectedFiles.contains("webSearchEngines.json")) {
-            onProgress?.invoke(BackupInfoHelper.getDisplayName("webSearchEngines.json"))
-            val engines = SearchEngineHelper.loadSearchEngines(appCtx)
-            FileUtils.createFileIfNotExist(backupPath + File.separator + "webSearchEngines.json")
-                .writeText(GSON.toJson(engines))
         }
         if (selectedFiles.contains("replaceRule.json")) {
             writeListToJson(appDb.replaceRuleDao.all, "replaceRule.json", backupPath, onProgress)

@@ -4,9 +4,6 @@ import androidx.room.*
 import io.legado.app.data.entities.HttpTTS
 import kotlinx.coroutines.flow.Flow
 
-/**
- * HTTP TTS 数据访问接口
- */
 @Dao
 interface HttpTTSDao {
 

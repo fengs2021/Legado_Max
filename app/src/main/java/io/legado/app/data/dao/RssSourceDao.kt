@@ -15,9 +15,7 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-/**
- * RSS源数据访问接口
- */
+
 @Dao
 interface RssSourceDao {
 

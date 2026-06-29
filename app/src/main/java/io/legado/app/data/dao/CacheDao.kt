@@ -6,9 +6,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import io.legado.app.data.entities.Cache
 
-/**
- * 缓存数据访问接口
- */
 @Dao
 interface CacheDao {
 

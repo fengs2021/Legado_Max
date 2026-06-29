@@ -84,8 +84,6 @@ object BackupInfoHelper {
         "bookSource.json" to "书源",
         "rssSources.json" to "订阅源",
         "rssStar.json" to "订阅收藏",
-        "sourceSub.json" to "源订阅",
-        "webSearchEngines.json" to "搜索引擎规则",
         "replaceRule.json" to "替换规则",
         HighlightRuleStore.backupFileName to "高亮规则",
         "readRecord.json" to "阅读记录",
@@ -158,7 +156,6 @@ object BackupInfoHelper {
             "bookSource.json" to { appDb.bookSourceDao.all.size },
             "rssSources.json" to { appDb.rssSourceDao.all.size },
             "rssStar.json" to { appDb.rssStarDao.all.size },
-            "sourceSub.json" to { appDb.ruleSubDao.all.size },
             "replaceRule.json" to { appDb.replaceRuleDao.all.size },
             "readRecord.json" to { appDb.readRecordDao.all.size },
             "readRecordDetail.json" to { appDb.readRecordDao.getDetailsCount() },
@@ -336,32 +333,6 @@ object BackupInfoHelper {
             size < 1024 -> "$size B"
             size < 1024 * 1024 -> String.format("%.1f KB", size / 1024.0)
             else -> String.format("%.2f MB", size / (1024.0 * 1024))
-        }
-    }
-
-    /**
-     * 获取指定备份项的数据数量
-     */
-    fun getItemCount(key: String): Int {
-        return when (key) {
-            "bookshelf" -> appDb.bookDao.all.size
-            "bookmark" -> appDb.bookmarkDao.all.size
-            "bookGroup" -> appDb.bookGroupDao.all.size
-            "bookSource" -> appDb.bookSourceDao.all.size
-            "rssSources" -> appDb.rssSourceDao.all.size
-            "rssStar" -> appDb.rssStarDao.all.size
-            "sourceSub" -> appDb.ruleSubDao.all.size
-            "replaceRule" -> appDb.replaceRuleDao.all.size
-            "readRecord" -> appDb.readRecordDao.all.size
-            "searchHistory" -> appDb.searchKeywordDao.all.size
-            "txtTocRule" -> appDb.txtTocRuleDao.all.size
-            "httpTTS" -> appDb.httpTTSDao.all.size
-            "keyboardAssists" -> appDb.keyboardAssistsDao.all.size
-            "dictRule" -> appDb.dictRuleDao.all.size
-            "servers" -> appDb.serverDao.all.size
-            "homepage" -> appDb.homepageModuleDao.all.size + appDb.homepageCustomSetDao.all.size
-            "runtimeSourceCache" -> appDb.cacheDao.getRuntimeSourceCaches(System.currentTimeMillis()).size
-            else -> 0
         }
     }
 }
