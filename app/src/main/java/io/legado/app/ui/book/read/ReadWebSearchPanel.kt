@@ -283,6 +283,13 @@ class ReadWebSearchPanel @JvmOverloads constructor(
         pooledWebView = WebViewPool.acquire(context)
         webView.apply {
             webViewClient = object : WebViewClient() {
+				override fun onPageFinished(view: WebView?, url: String?) {
+				    super.onPageFinished(view, url)
+				    if (isSwitchingEngine) {
+				        webView.clearHistory()
+				        isSwitchingEngine = false
+				    }
+				}
                 override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
                     return shouldOverrideUrlLoading(request?.url)
                 }
@@ -357,6 +364,7 @@ class ReadWebSearchPanel @JvmOverloads constructor(
             setOnClickListener {
                 selectedEngineIndex = index
                 updateEngineButtons()
+                saveLastSelectedEngineUrl(context, engine.url)
                 loadSearch(searchEdit.text.toString())
             }
             layoutParams = LinearLayout.LayoutParams(
