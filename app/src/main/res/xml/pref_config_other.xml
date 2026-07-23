@@ -163,6 +163,12 @@
 
         <io.legado.app.lib.prefs.SwitchPreference
             android:defaultValue="false"
+            android:key="autoStartWebService"
+            android:summary="@string/auto_start_web_service_summary"
+            android:title="@string/auto_start_web_service_title" />
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="false"
             android:key="webServiceAuthEnabled"
             android:summary="@string/web_service_auth_summary"
             android:title="@string/web_service_auth_title" />

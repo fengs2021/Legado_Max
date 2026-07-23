@@ -1295,6 +1295,8 @@
     <string name="webdav_device_name">Device name</string>
     <string name="web_service_wake_lock">WebService Wake up Lock</string>
     <string name="web_service_wake_lock_summary">The wake-up lock is enabled when the web service is enabled, and some phones will be killed when the wake-up lock is enabled.</string>
+    <string name="auto_start_web_service_title">Auto Start Web Service</string>
+    <string name="auto_start_web_service_summary">Automatically start the web service when the app launches</string>
     <string name="unsafe_ssl_title">Skip SSL Verification</string>
     <string name="unsafe_ssl_summary">Skip SSL certificate verification for all network requests, may expose to man-in-the-middle attacks. Only enable if a site has certificate issues</string>
     <string name="need_restart_app">This change requires restarting the app to take effect. Restart now?</string>

@@ -256,6 +256,14 @@ class OtherConfigFragment : PreferenceFragment(),
                 }
             }
 
+            PreferKey.autoStartWebService -> {
+                if (appCtx.getPrefBoolean(PreferKey.autoStartWebService, false)
+                    && !WebService.isRun
+                ) {
+                    WebService.start(requireContext())
+                }
+            }
+
             PreferKey.defaultBookTreeUri -> {
                 upPreferenceSummary(key, AppConfig.defaultBookTreeUri)
             }

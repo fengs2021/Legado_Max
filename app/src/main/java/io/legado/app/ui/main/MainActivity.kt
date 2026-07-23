@@ -66,6 +66,10 @@ import splitties.views.bottomPadding
 import kotlin.coroutines.resume
 import androidx.core.view.get
 import io.legado.app.help.update.AppUpdate
+import io.legado.app.service.WebService
+import io.legado.app.ui.about.UpdateDialog
+import io.legado.app.utils.getPrefBoolean
+import splitties.init.appCtx
 import io.legado.app.ui.about.UpdateDialog
 import kotlin.time.Duration.Companion.hours
 
@@ -174,6 +178,12 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
             }
             binding.viewPagerMain.postDelayed(3000) {
                 viewModel.postLoad()
+            }
+            //自动开启Web服务
+            if (appCtx.getPrefBoolean(PreferKey.autoStartWebService, false)) {
+                binding.viewPagerMain.postDelayed(4000) {
+                    WebService.start(this@MainActivity)
+                }
             }
         }
     }

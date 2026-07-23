@@ -192,6 +192,7 @@ object PreferKey {
     const val noAnimScrollPage = "noAnimScrollPage"
     const val webDavDeviceName = "webDavDeviceName"
     const val webServiceWakeLock = "webServiceWakeLock"
+    const val autoStartWebService = "autoStartWebService"
     const val webServiceToken = "webServiceToken"
     const val webServiceAuthEnabled = "webServiceAuthEnabled"
     const val unsafeSsl = "unsafeSsl"
