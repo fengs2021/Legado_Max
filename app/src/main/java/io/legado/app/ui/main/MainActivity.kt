@@ -70,7 +70,6 @@ import io.legado.app.service.WebService
 import io.legado.app.ui.about.UpdateDialog
 import io.legado.app.utils.getPrefBoolean
 import splitties.init.appCtx
-import io.legado.app.ui.about.UpdateDialog
 import kotlin.time.Duration.Companion.hours
 
 /**
