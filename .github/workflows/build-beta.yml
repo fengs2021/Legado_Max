@@ -1,0 +1,84 @@
+name: Build Beta APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - build-beta
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-ver.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 5
+
+      - name: Set version
+        id: set-ver
+        run: |
+          echo "version=3.$(date -d '8 hour' -u +%y.%m%d%H)" >> $GITHUB_OUTPUT
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      - name: Cache Gradle Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Build Beta APK
+        run: |
+          echo "版本号: ${{ steps.set-ver.outputs.version }}"
+          chmod +x gradlew
+          ./gradlew assembleAppMaxRelease --build-cache --parallel --daemon --warning-mode all
+
+      - name: Collect APK
+        run: |
+          mkdir -p ${{ github.workspace }}/apk/
+          for file in `ls ${{ github.workspace }}/app/build/outputs/apk/appMax/release/*.apk 2>/dev/null || true`; do
+            cp "$file" ${{ github.workspace }}/apk/
+          done
+          echo "APK files:"
+          ls -la ${{ github.workspace }}/apk/ || echo "No APK found"
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: legado-beta-apk
+          path: ${{ github.workspace }}/apk/*.apk
+          if-no-files-found: error
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/build-beta'
+        with:
+          name: legado_beta_${{ steps.set-ver.outputs.version }}
+          tag_name: beta-${{ steps.set-ver.outputs.version }}
+          body: |
+            ⚠️ 安装前请备份数据
+            
+            Beta 版本自动构建
+          prerelease: true
+          files: ${{ github.workspace }}/apk/*.apk
+          fail_on_unmatched_files: true
